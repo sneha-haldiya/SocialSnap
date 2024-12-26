@@ -25,3 +25,23 @@ const collection = mongoose.model("collection",userSchema);
 
 connectDataBase();
 export default collection;
+
+/* 
+collections of user
+collection of followers
+collection of following
+collection of chats {collection of messages}
+{
+    objectID of user1
+    --user2
+    messages: {}
+}
+*/
+
+/* 
+_objectID
+numfollowers
+numfollowing
+listofusersfollowing: {id, messages: {name, time, message}}
+listofusersfollowing: {id}
+*/

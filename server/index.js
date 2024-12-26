@@ -28,7 +28,7 @@ app.post("/",async(req,res) => {
         }
         if(exist){
             if(exist.password == password){
-                res.json("Success login");
+                res.json({message: "Success login",username: exist.username});
             }
             else{
                 res.json("Failed: Incorrect Password");
@@ -54,6 +54,26 @@ app.post("/signup",async(req,res) => {
         else{
             await collection.insertMany({fullname:fullname,username:username,email:email,phoneno:phoneno,password:password});
             res.json("Success signup");
+        }
+    }
+    catch(e){
+        res.json(`Error: ${e}`);
+    }
+})
+app.post("/search",async(req,res) => {
+    const {defaultUsername, username} = req.body;
+    try{
+        const users = await collection.find({username: { $regex: `.*${username}.*`, $options: "i" }});
+        // console.log(defaultUsername,"default");
+        if(users.length > 0) {
+            const usernames = users.filter(({ username }) => defaultUsername !== username).map(user => user.username);
+            // const usernames = users.map((user) =>{if(defaultUsername === user.username) return; return user.username});
+            console.log(usernames);
+            // const usernames = users.map( user => user.username);
+            res.json({message: "Searched",users: usernames});
+        }
+        else{
+            res.json({message: "No User Found",users: []});
         }
     }
     catch(e){
