@@ -5,7 +5,8 @@ import List from './List';
 
 const Search = () => {
   const location = useLocation();
-  const defaultUsername = useContext(UserData);
+  const { username: defaultUsername } = useContext(UserData);
+  const { id: defaultId } = useContext(UserData);
 
   const [searchedUser, setSearchedUser] = useState('');
   const [userList, setUserList] = useState([]);
@@ -23,11 +24,10 @@ const Search = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({defaultUsername, username: searchedUser }),
+        body: JSON.stringify({ defaultId, username: searchedUser }),
       });
       const r = await response.json();
       setHasSearched(true);
-      /* console.log(r); */
       if (r.message === "Searched") {
         setUserList(r.users);
       }
@@ -40,7 +40,6 @@ const Search = () => {
     }
   }
 
-  //this is the changement
   const handleSubmit = (e) => {
     if (e.target.value === '') {
       setSearchedUser('');
@@ -50,7 +49,6 @@ const Search = () => {
       setSearchedUser(e.target.value);
       submit();
     }
-    console.log(searchedUser);
   }
 
   return (
@@ -58,8 +56,7 @@ const Search = () => {
       <div className='flex flex-col p-2'>
         <h1>username: {defaultUsername}</h1>
         <div className='flex flex-row'>
-          <input type="text" className='p-2 bg-gray-800 border border-gray-500 rounded-md text-xs text-white' onChange={(e) => { handleSubmit(e) }} placeholder="Make new Friends!" />
-          {/* <button className='px-5 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all' onClick={submit}>Search</button> */}
+          <input type="text" className='p-2 bg-gray-800 border border-gray-500 rounded-md text-xs' onChange={(e) => { handleSubmit(e) }} placeholder="Make new Friends!" />
         </div>
         {hasSearched && <List userList={userList} />}
       </div>

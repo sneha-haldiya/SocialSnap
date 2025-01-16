@@ -39,7 +39,7 @@ const Login = () => {
       const r = await response.json();
 
       if (r.message === "Success login") {
-        navigate("/home", { state: { username: r.username } });
+        navigate("/home", { state: { username: r.username, id: r.id } });
       }
       else {
         alert(r);
@@ -49,8 +49,9 @@ const Login = () => {
       alert(`Error: ${e}`);
     }
   }
+  
   return (
-    <div className='flex flex-col bg-gray-950 py-10 rounded-md align-center border border-gray-500'>
+    <div className='flex flex-col bg-gray-950 py-10 rounded-md align-center border border-gray-500 text-white'>
       <h1 className="self-center text-4xl text-white italic font-serif p-4 px-20">SocialSnap</h1>
       <form action='POST' className='flex flex-col gap-2 m-4'>
         <input type="text" className='p-2 w-full bg-gray-800 border border-gray-500 rounded-md text-xs text-white' onChange={(e) => { setObject(e.target.value) }} placeholder="Phone number,username, or email" />

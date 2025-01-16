@@ -1,6 +1,7 @@
-import React, { createContext,useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Routes, Route } from "react-router-dom";
+import { io } from "socket.io-client";
 
 import NavBar from './NavBar/NavBar';
 import Profile from './ProfileComponents/Profile';
@@ -10,28 +11,46 @@ import Notification from './NotificationComponents/Notification';
 import Message from './MessageComponents/Message';
 
 export const UserData = createContext();
+export const socketContext = createContext();
 
 const Home = () => {
   const location = useLocation();
-  const [username, setUsername] = useState(location.state?.username || '');
-  
-  console.log('HOME PAGE: ', username);
+  const [userData, setUserData] = useState({ username: location.state?.username || '', id: location.state?.id || '' });
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const socket = io("http://localhost:3001", {
+      auth: {
+        token: "abcd"
+      }
+    });
+
+    setSocket(socket);
+    socket.emit("addUser", userData.id);
+
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
+
 
   return (
-    <UserData.Provider value={username}>
-      <div className="flex h-screen w-screen">
-        <NavBar />
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/notification" element={<Notification />} />
-            <Route path = "/message" element={<Message/>}/>
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
+    <socketContext.Provider value={socket}>
+      <UserData.Provider value={userData}>
+        <div className="flex h-screen w-screen">
+          <NavBar />
+          <div className="flex-1">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/notification" element={<Notification />} />
+              <Route path="/message" element={<Message />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </UserData.Provider>
+      </UserData.Provider>
+    </socketContext.Provider>
   );
 };
 
